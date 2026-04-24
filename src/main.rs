@@ -5,7 +5,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
-const DWAGENT_URL: &str = "https://www.dwservice.net/download/dwagent_x86_64.sh";
+const DWAGENT_URL: &str = "https://www.dwservice.net/download/dwagent.sh";
 const INSTALL_PATH: &str = "/tmp/dwagent.sh";
 
 #[derive(Debug, Parser)]
