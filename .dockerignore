@@ -1,8 +1,15 @@
+# Ignore everything except what we need
+/*
+!/Cargo.toml
+!/Cargo.lock
+!/Dockerfile
+!/railway.toml
+!/src
+!/src/*
+!.gitkeep
 target
 .DS_Store
 **/*.rs.bk
-Cargo.lock
 .github
-README.md
 .git
 .gitignore

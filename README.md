@@ -1,16 +1,24 @@
 # trios-dwagent
 
-> DWService Agent installer for Railway deployment
+> RustDesk Server installer for Railway deployment
 
-A lightweight Rust CLI utility for deploying DWService monitoring agent to Railway containers. DWService provides secure remote access and monitoring capabilities for your infrastructure.
+A lightweight Rust CLI utility for deploying RustDesk Server (self-hosted remote desktop) to Railway containers. RustDesk is a fully open-source remote desktop solution written in Rust.
 
 ## Features
 
-- **Zero-dependency** single binary deployment
-- **Automatic installer download** from DWService official source
+- **Pure Rust** implementation - no shell scripts or Python
+- **Automatic binary download** from RustDesk GitHub releases
 - **Railway-ready** Dockerfile with multi-stage build
 - **GitHub Actions** workflow for automatic deployments
 - **Clippy-clean**: Zero warnings, production-ready code
+
+## What is RustDesk Server?
+
+RustDesk Server consists of two main components:
+- **hbbs** - Rendezvous/ID server (handles connections and NAT traversal)
+- **hbbr** - Relay server (for direct P2P connections)
+
+Both are written in pure Rust and compile to small, efficient binaries.
 
 ## Installation
 
@@ -37,11 +45,26 @@ cargo build -p trios-dwagent --release --target x86_64-unknown-linux-gnu
 ## Usage
 
 ```bash
-# Download installer and display installation instructions
-trios-dwagent install-all
+# Full setup (download + start)
+trios-dwagent setup
 
-# Download installer only
+# Download binaries only
 trios-dwagent download
+
+# Force re-download
+trios-dwagent download --force
+
+# Start servers
+trios-dwagent start
+
+# Restart servers
+trios-dwagent start --restart
+
+# Check status
+trios-dwagent status
+
+# Stop servers
+trios-dwagent stop
 
 # Clean up downloaded files
 trios-dwagent cleanup
@@ -52,31 +75,30 @@ trios-dwagent --help
 
 ## Deployment
 
-### Method 1: Railway Shell (for existing IGLA project)
+### Railway Setup
 
 ```bash
 # Link to existing project
 railway link -p e4fe33bb-3b09-4842-9782-7d2dea1abc9b
 
+# Deploy
+railway up
+
+# Or build and deploy from Dockerfile
+railway deploy
+```
+
+### Railway Shell (manual testing)
+
+```bash
 # Open shell
 railway shell
 
-# Run installer
-./trios-dwagent install-all
+# Run setup
+./trios-dwagent setup
 
-# Follow instructions to complete installation
-sudo /tmp/dwagent.sh
-```
-
-### Method 2: Manual Installation (no trios-dwagent)
-
-```bash
-railway shell
-
-# Direct DWAgent installation
-curl -L https://www.dwservice.net/download/dwagent_x86_64.sh -o /tmp/dwagent.sh
-chmod +x /tmp/dwagent.sh
-sudo /tmp/dwagent.sh
+# Check status
+./trios-dwagent status
 ```
 
 ## Configuration
@@ -87,13 +109,50 @@ Railway auto-detects `railway.toml` in the crate root:
 - Uses `rust:slim` (latest) for optimal build
 - Deploys to project IGLA
 - Memory: 256MB, CPU: 0.5 vCPU
+- Restart on failure (max 3 retries)
 
-## After Deployment
+### Exposed Ports
 
-1. Visit [DWService](https://www.dwservice.net)
-2. Login to see your connected machines
-3. Your Railway container will appear in machine list
-4. Use DWService web interface for remote terminal and monitoring
+The Dockerfile exposes the following RustDesk Server ports:
+
+| Port | Service | Description |
+|------|---------|-------------|
+| 21114 | Web | Web client (optional) |
+| 21115 | HBBS | ID/Rendezvous server |
+| 21116 | HBBR | Relay server |
+| 21117 | API | Web API (optional) |
+| 21118/21119 | Additional | Reserved for future use |
+
+## Connecting with RustDesk Client
+
+1. Download [RustDesk Client](https://rustdesk.com/)
+2. Configure the connection settings:
+   - **ID Server**: `<your-railway-host>:21115`
+   - **Relay**: `<your-railway-host>:21116`
+3. Your server will appear in the machine list
+
+### Finding Your Railway Host
+
+```bash
+railway domains
+# Or check Railway dashboard for the deployment URL
+```
+
+## Architecture
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────┐
+│   Client    │────▶│  hbbs (ID/Port)  │────▶│   Client    │
+│  (RustDesk) │     │    Port: 21115   │     │  (RustDesk) │
+└─────────────┘     └──────────────────┘     └─────────────┘
+                          │
+                          ▼
+                    ┌─────────────┐
+                    │  hbbr       │
+                    │  (Relay)    │
+                    │  Port: 21116│
+                    └─────────────┘
+```
 
 ## Development
 
@@ -111,10 +170,14 @@ cargo test -p trios-dwagent
 
 # Lint (must pass before merge)
 cargo clippy -p trios-dwagent -- -D warnings
+
+# Format
+cargo fmt -p trios-dwagent
 ```
 
 ## Links
 
 - [Trios Repository](https://github.com/gHashTag/trios)
-- [DWService](https://www.dwservice.net)
+- [RustDesk](https://rustdesk.com/)
+- [RustDesk Server GitHub](https://github.com/rustdesk/rustdesk-server)
 - [Railway](https://railway.app)
