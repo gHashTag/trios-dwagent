@@ -76,7 +76,12 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Dmitrii Vasilev"]
 license = "MIT"
+<<<<<<< HEAD
 repository = "https://github.com/gHashTag/trios"
+=======
+repository = "https://github.com/gHashTag/trios-dwagent"
+description = "RustDesk Server installer for Railway deployment"
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
@@ -84,10 +89,17 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
 tracing = "0.1"
+<<<<<<< HEAD
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 axum = "0.7"
 git2 = "0.19"
 async-trait = "0.1"
+=======
+tracing-subscriber = "0.3"
+zip = "2"
+
+[dev-dependencies]
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 tempfile = "3"
 thiserror = "1"
 futures = "0.3"

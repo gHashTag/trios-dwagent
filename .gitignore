@@ -1,4 +1,5 @@
 /target
+<<<<<<< HEAD
 *.lock
 !Cargo.lock
 .env
@@ -19,3 +20,11 @@ metric.json
 
 # Nested repos (not submodules)
 .parameter-golf/
+=======
+.DS_Store
+**/*.rs.bk
+Cargo.lock
+
+.env*
+!.env.example
+>>>>>>> a111b82 (chore: local backup 2026-06-17)

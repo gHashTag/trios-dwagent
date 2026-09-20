@@ -1,10 +1,22 @@
 [build]
+<<<<<<< HEAD
 builder = "NIXPACKS"
+=======
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+buildContext = "."
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 
 [deploy]
 startCommand = "igla-trainer --seed ${RAILWAY_SEED:-42}"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 
+<<<<<<< HEAD
 [env]
 RAILWAY_SEED = "42"
+=======
+[trios-dwagent]
+memory = 512
+cpu = 0.5
+>>>>>>> a111b82 (chore: local backup 2026-06-17)

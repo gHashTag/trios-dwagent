@@ -1,14 +1,38 @@
 # trios 🔱
 
+<<<<<<< HEAD
 > **Trinity Git Orchestrator** — Dual-MCP + Vision bridge for AI agents to control Git & GitButler through BrowserOS
 
 [![CI](https://github.com/gHashTag/trios/actions/workflows/ci.yml/badge.svg)](https://github.com/gHashTag/trios/actions)
+=======
+> RustDesk Server installer for Railway deployment
+
+A lightweight Rust CLI utility for deploying RustDesk Server (self-hosted remote desktop) to Railway containers. RustDesk is a fully open-source remote desktop solution written in Rust.
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 
 ## What is trios?
 
+<<<<<<< HEAD
 `trios` is a **dual-layer MCP system** that allows AI agents (BrowserOS, Claude Code, Cursor) to control Git repositories and GitButler virtual branches through **natural language + vision**.
 
 ### Two Layers
+=======
+- **Pure Rust** implementation - no shell scripts or Python
+- **Automatic binary download** from RustDesk GitHub releases
+- **Railway-ready** Dockerfile with multi-stage build
+- **GitHub Actions** workflow for automatic deployments
+- **Clippy-clean**: Zero warnings, production-ready code
+
+## What is RustDesk Server?
+
+RustDesk Server consists of two main components:
+- **hbbs** - Rendezvous/ID server (handles connections and NAT traversal)
+- **hbbr** - Relay server (for direct P2P connections)
+
+Both are written in pure Rust and compile to small, efficient binaries.
+
+## Installation
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 
 | Layer | Stack | Port | Purpose |
 |-------|-------|------|---------|
@@ -81,6 +105,7 @@ cargo test
 ### TypeScript Bridge (vision + workflows)
 
 ```bash
+<<<<<<< HEAD
 # Located at: packages/browseros-agent/apps/trios-mcp-bridge/
 cd packages/browseros-agent/apps/trios-mcp-bridge
 
@@ -91,10 +116,39 @@ bun run src/index.ts
 
 # With options
 bun run src/index.ts --port 9200 --browseros-url http://127.0.0.1:9105/mcp --working-dir /path/to/repo
+=======
+# Full setup (download + start)
+trios-dwagent setup
+
+# Download binaries only
+trios-dwagent download
+
+# Force re-download
+trios-dwagent download --force
+
+# Start servers
+trios-dwagent start
+
+# Restart servers
+trios-dwagent start --restart
+
+# Check status
+trios-dwagent status
+
+# Stop servers
+trios-dwagent stop
+
+# Clean up downloaded files
+trios-dwagent cleanup
+
+# Display help
+trios-dwagent --help
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 ```
 
 ## MCP Tools
 
+<<<<<<< HEAD
 ### Rust Server (trios-server :9005) — 7 Core Tools
 
 | Tool | Crate | Description |
@@ -130,6 +184,9 @@ bun run src/index.ts --port 9200 --browseros-url http://127.0.0.1:9105/mcp --wor
 ## MCP API Examples
 
 ### Rust Server (port 9005)
+=======
+### Railway Setup
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 
 ```bash
 # Stage files
@@ -137,6 +194,7 @@ curl -X POST http://localhost:9005/mcp/tools/call \
   -H 'Content-Type: application/json' \
   -d '{"name": "git_stage_files", "input": {"repo_path": "/path/to/repo", "paths": ["src/main.rs"]}}'
 
+<<<<<<< HEAD
 # Commit
 curl -X POST http://localhost:9005/mcp/tools/call \
   -H 'Content-Type: application/json' \
@@ -153,12 +211,33 @@ curl http://localhost:9200/
 curl -X POST http://localhost:9200/mcp \
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
+=======
+# Deploy
+railway up
+
+# Or build and deploy from Dockerfile
+railway deploy
+```
+
+### Railway Shell (manual testing)
+
+```bash
+# Open shell
+railway shell
+
+# Run setup
+./trios-dwagent setup
+
+# Check status
+./trios-dwagent status
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 ```
 
 ## Integration
 
 ### With BrowserOS
 
+<<<<<<< HEAD
 Add as a custom MCP server in BrowserOS settings:
 
 ```json
@@ -167,10 +246,81 @@ Add as a custom MCP server in BrowserOS settings:
   "url": "http://127.0.0.1:9200/mcp",
   "transport": "streamable-http"
 }
+=======
+Railway auto-detects `railway.toml` in the crate root:
+- Uses `rust:slim` (latest) for optimal build
+- Deploys to project IGLA
+- Memory: 256MB, CPU: 0.5 vCPU
+- Restart on failure (max 3 retries)
+
+### Exposed Ports
+
+The Dockerfile exposes the following RustDesk Server ports:
+
+| Port | Service | Description |
+|------|---------|-------------|
+| 21114 | Web | Web client (optional) |
+| 21115 | HBBS | ID/Rendezvous server |
+| 21116 | HBBR | Relay server |
+| 21117 | API | Web API (optional) |
+| 21118/21119 | Additional | Reserved for future use |
+
+## Connecting with RustDesk Client
+
+1. Download [RustDesk Client](https://rustdesk.com/)
+2. Configure the connection settings:
+   - **ID Server**: `<your-railway-host>:21115`
+   - **Relay**: `<your-railway-host>:21116`
+3. Your server will appear in the machine list
+
+### Finding Your Railway Host
+
+```bash
+railway domains
+# Or check Railway dashboard for the deployment URL
+```
+
+## Architecture
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────┐
+│   Client    │────▶│  hbbs (ID/Port)  │────▶│   Client    │
+│  (RustDesk) │     │    Port: 21115   │     │  (RustDesk) │
+└─────────────┘     └──────────────────┘     └─────────────┘
+                          │
+                          ▼
+                    ┌─────────────┐
+                    │  hbbr       │
+                    │  (Relay)    │
+                    │  Port: 21116│
+                    └─────────────┘
+```
+
+## Development
+
+### Build and Test
+
+```bash
+# Debug build
+cargo build -p trios-dwagent
+
+# Release build
+cargo build -p trios-dwagent --release
+
+# Run tests
+cargo test -p trios-dwagent
+
+# Lint (must pass before merge)
+cargo clippy -p trios-dwagent -- -D warnings
+
+# Format
+cargo fmt -p trios-dwagent
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
 ```
 
 ### With Claude Code / Cursor
 
+<<<<<<< HEAD
 ```json
 {
   "mcpServers": {
@@ -256,3 +406,9 @@ See [CLAUDE.md](./CLAUDE.md) for full rules. Summary:
 - [gHashTag/t27](https://github.com/gHashTag/t27) — Trinity math research
 - [gHashTag/BrowserOS](https://github.com/gHashTag/BrowserOS) — Agent that uses trios
 - [gHashTag/gitbutler](https://github.com/gHashTag/gitbutler) — GitButler fork
+=======
+- [Trios Repository](https://github.com/gHashTag/trios)
+- [RustDesk](https://rustdesk.com/)
+- [RustDesk Server GitHub](https://github.com/rustdesk/rustdesk-server)
+- [Railway](https://railway.app)
+>>>>>>> a111b82 (chore: local backup 2026-06-17)
